@@ -4,6 +4,8 @@
 
 ### *Documents that finally talk to each other.*
 
+[Live Link](https://braid-psi.vercel.app/)
+
 <p align="center">
 
 **An AI-powered Industrial Knowledge Intelligence Platform that transforms fragmented industrial documents into a searchable, connected, and explainable operational knowledge base.**
