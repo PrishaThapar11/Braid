@@ -1,7 +1,5 @@
 # 🧠 BRAID
 
-## ET AI Hackathon 2026
-
 ### *Documents that finally talk to each other.*
 
 [Live Link](https://braid-psi.vercel.app/)
