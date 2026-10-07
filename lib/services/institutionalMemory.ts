@@ -1,13 +1,9 @@
 import { supabaseAdmin } from "@/lib/supabase";
 import { generateEmbedding } from "@/lib/services/embeddings";
+import { selectTopRelated, type ChunkMatch } from "@/lib/services/relatedSelection";
 
 const RELATED_MATCH_COUNT = 50; // cast a wide net across all chunks, then narrow below
 const MAX_RELATED_DOCUMENTS = 3;
-
-interface ChunkMatch {
-  document_id: string;
-  similarity: number;
-}
 
 export async function findAndStoreRelatedDocuments(
   documentId: string,
@@ -44,20 +40,11 @@ export async function findAndStoreRelatedDocuments(
 
   // A document has many chunks. Keep only the BEST similarity score per
   // OTHER document, and exclude the document matching against itself.
-  const bestByDocument = new Map<string, number>();
-
-  for (const match of matches as ChunkMatch[]) {
-    if (match.document_id === documentId) continue;
-
-    const existing = bestByDocument.get(match.document_id);
-    if (existing === undefined || match.similarity > existing) {
-      bestByDocument.set(match.document_id, match.similarity);
-    }
-  }
-
-  const topRelated = [...bestByDocument.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, MAX_RELATED_DOCUMENTS);
+  const topRelated = selectTopRelated(
+    matches as ChunkMatch[],
+    documentId,
+    MAX_RELATED_DOCUMENTS
+  );
 
   for (const [relatedDocumentId, similarity] of topRelated) {
     const { error: insertError } = await supabaseAdmin
