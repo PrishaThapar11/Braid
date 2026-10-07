@@ -27,3 +27,10 @@ as $$
   order by document_chunks.embedding <=> query_embedding
   limit match_count;
 $$;
+
+   -- Approximate-nearest-neighbour index so match_document_chunks() does not
+   -- scan every chunk. vector_cosine_ops matches the <=> (cosine) operator
+   -- the function orders by.
+   create index if not exists document_chunks_embedding_hnsw_idx
+     on document_chunks
+     using hnsw (embedding vector_cosine_ops);
